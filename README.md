@@ -2,7 +2,7 @@
 
 docker-compose file
 
-```
+```yaml
 version: "3"
 
 services: 
