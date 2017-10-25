@@ -6,7 +6,7 @@ MAINTAINER Clint Armstrong <clint@clintarmstrong.net>
 
 RUN apt-get update && \ 
     apt-get install -y dialog apt-utils git php-pear php5-curl \
-    php5-mysql php5-json php5-gmp php5-mcrypt php5-ldap \
+    php5-mysql php5-json php5-gmp php5-mcrypt php5-ldap fping dnsutils \
     libgmp-dev libpng-dev libmcrypt-dev libfreetype6-dev libpng12-dev libjpeg-dev libpng-dev && \
     rm -rf /var/lib/apt/lists/* 
     # Configure apache and required PHP modules     
@@ -20,6 +20,7 @@ RUN docker-php-ext-configure mysqli --with-mysqli=mysqlnd && \
     docker-php-ext-install gmp && \
     docker-php-ext-install mcrypt && \
     docker-php-ext-install sockets && \
+    docker-php-ext-install pcntl && \
     docker-php-ext-configure gd \
         --enable-gd-native-ttf \
         --with-freetype-dir=/usr/include/freetype2 \
