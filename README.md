@@ -21,7 +21,17 @@ services:
     ports:
      - "10001:3306"
     environment:
-     - MYSQL_ROOT_PASSWORD=P@ssw0rd
+     - MYSQL_ROOT_PASSWORD=<root_password>
     volumes:
      - "/home/phpipam/mysql:/var/lib/mysql"
+```
+To start from the same folder as docker-compose.yml
+```
+docker-compose up -d
+```
+For automatic database provision working need to GRANT access for phpipam user before DB creat via web interface.
+```
+docker exec -it mysql bin/bash
+mysql -u root --password=<MYSQL_ROOT_PASSWORD> -e "GRANT ALL on phpipam.* to 'phpipam'@'%' identified by '<phpipam_pass>';"
+exit
 ```
