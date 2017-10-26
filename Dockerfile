@@ -1,25 +1,16 @@
 FROM php:5.6-apache 
-MAINTAINER Clint Armstrong <clint@clintarmstrong.net> 
+MAINTAINER Alex Z <alviz@alviz.net> 
 
-# Fix from:
-# https://github.com/bringnow/docker-letsencrypt-manager/commit/7a157dcd05ea8e745ec604734f6e7aa2e9e7b7cc
-# Put cron logfiles into a volume. This also works around bug
-# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=810669
-# caused by base image using old version of coreutils
-# which causes "tail: unrecognized file system type 0x794c7630 for '/var/log/cron.log'"
-# when using docker with overlay storage driver.
-VOLUME /var/log/
-
-# Install required deb packages 
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 
+# Install required deb packages 
 RUN apt-get update && \ 
-    apt-get install -y dialog apt-utils git php-pear php5-curl cron \
+    apt-get install -y dialog apt-utils git php-pear php5-curl vim \
     php5-mysql php5-json php5-gmp php5-mcrypt php5-ldap fping dnsutils \
     libgmp-dev libpng-dev libmcrypt-dev libfreetype6-dev libpng12-dev libjpeg-dev libpng-dev && \
     rm -rf /var/lib/apt/lists/* 
-    # Configure apache and required PHP modules     
-    
+
+# Configure apache and required PHP modules         
 RUN docker-php-ext-configure mysqli --with-mysqli=mysqlnd && \
     docker-php-ext-install mysqli && \
     docker-php-ext-install pdo_mysql && \
@@ -75,6 +66,4 @@ RUN sed -i \
         -e "s/\['ssl_cipher'\] *= 'DHE-RSA-AES256-SHA:AES128-SHA'/['ssl_cipher'\] = getenv('SSL_CIPHER')/" \
         /var/www/html/config.php
 
-
 EXPOSE 80
-
