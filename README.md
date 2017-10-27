@@ -1,4 +1,4 @@
-# PHPIPAM
+# PHPIPAM v1.3
 
 docker-compose file
 
@@ -34,4 +34,12 @@ For automatic database provision working need to GRANT access for phpipam user b
 docker exec -it mysql bin/bash
 mysql -u root --password=<MYSQL_ROOT_PASSWORD> -e "GRANT ALL on phpipam.* to 'phpipam'@'%' identified by '<phpipam_pass>';"
 exit
+```
+
+To run IP pingcheck, autodiscovery and dnslookup use crontab on host station. For example: 
+from root: crontab -e
+```
+*/30 * * * * docker exec ipam /usr/local/bin/php /var/www/html/functions/scripts/pingCheck.php > /var/log/crontab.log 2>&1
+* */1 * * * docker exec ipam /usr/local/bin/php /var/www/html/functions/scripts/discoveryCheck.php > /var/log/crontab.log 2>&1
+0 3 * * * docker exec ipam /usr/local/bin/php /var/www/html/functions/scripts/resolveIPaddresses.php > /var/log/crontab.log 2>&1
 ```
