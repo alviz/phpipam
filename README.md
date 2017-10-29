@@ -23,7 +23,10 @@ services:
     environment:
      - MYSQL_ROOT_PASSWORD=<root_password>
     volumes:
-     - "/home/phpipam/mysql:/var/lib/mysql"
+     - mysql-db:/var/lib/mysql
+
+volumes:
+  mysql-db:
 ```
 To start from the same folder as docker-compose.yml
 ```
@@ -39,7 +42,14 @@ exit
 To run IP pingcheck, autodiscovery and dnslookup use crontab on host station. For example: 
 from root: crontab -e
 ```
+#check devices availability every 30 min (for subnets with availability check enabled)
 */30 * * * * docker exec ipam /usr/local/bin/php /var/www/html/functions/scripts/pingCheck.php > /var/log/crontab.log 2>&1
+#discovery new devices every hour (for subnets with auto discovery enabled)
 * */1 * * * docker exec ipam /usr/local/bin/php /var/www/html/functions/scripts/discoveryCheck.php > /var/log/crontab.log 2>&1
+#update device names from DNS every day at 03.00 AM
 0 3 * * * docker exec ipam /usr/local/bin/php /var/www/html/functions/scripts/resolveIPaddresses.php > /var/log/crontab.log 2>&1
-```
+#backup phpipam db everyday
+0 4 * * * docker exec mysql mysqldump -u phpipam --password=<phpipam_pass> phpipam > /home/phpipam/backups/phpipam_backup_$(date +"%Y-%m-%d_%H-%M")
+#delete backups older than 20 days
+0 5 * * * /usr/bin/find /home/phpipam/backups/ -ctime +20 -exec rm {} \;
+~```
